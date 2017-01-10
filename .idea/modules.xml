@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/SDPExercises.iml" filepath="$PROJECT_DIR$/SDPExercises.iml" />
-      <module fileurl="file://$PROJECT_DIR$/exercises/week01/d1_01_Java_Generics_and_Reflection/d1_01_Java_Generics_and_Reflection.iml" filepath="$PROJECT_DIR$/exercises/week01/d1_01_Java_Generics_and_Reflection/d1_01_Java_Generics_and_Reflection.iml" />
-    </modules>
-  </component>
-</project>

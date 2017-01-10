@@ -41,6 +41,13 @@ public class Driver {
         } else {
             System.out.println( "NOT EQUAL" );
         }
+
+        /*
+        runtime output is 115.0 EQUAL
+        115.0 is returned because the getValue returns the contained class which is a BankAccount
+        and the showBalance is called to show the constructor value 100 plus the deposited amount of 15
+        The classes are equal
+         */
     }
 }
 
