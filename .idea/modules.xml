@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/d1-01 Java Generics and Reflection/d1-01 Java Generics and Reflection.iml" filepath="$PROJECT_DIR$/d1-01 Java Generics and Reflection/d1-01 Java Generics and Reflection.iml" />
+      <module fileurl="file://$PROJECT_DIR$/week01/d1-01 Java Generics and Reflection.iml" filepath="$PROJECT_DIR$/week01/d1-01 Java Generics and Reflection.iml" />
     </modules>
   </component>
 </project>
