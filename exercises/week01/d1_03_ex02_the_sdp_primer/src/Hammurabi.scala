@@ -1,7 +1,7 @@
 /**
   * Created by Alexander Worton on 10/01/2017.
   */
-object ex02 extends App{
+object Hammurabi extends App{
 
   def displayWelcomeMessage = {
     println("""    Congratulations, you are the newest ruler of ancient Samaria, elected
