@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/week01/d1-01 Java Generics and Reflection.iml" filepath="$PROJECT_DIR$/week01/d1-01 Java Generics and Reflection.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SDPExercises.iml" filepath="$PROJECT_DIR$/SDPExercises.iml" />
+      <module fileurl="file://$PROJECT_DIR$/exercises/week01/d1_01_Java_Generics_and_Reflection/d1_01_Java_Generics_and_Reflection.iml" filepath="$PROJECT_DIR$/exercises/week01/d1_01_Java_Generics_and_Reflection/d1_01_Java_Generics_and_Reflection.iml" />
     </modules>
   </component>
 </project>
