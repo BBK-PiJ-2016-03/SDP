@@ -8,7 +8,6 @@ object Basic extends App{
   val numbers: List[Int] = List(12,654,3,234,2)
 
   println("for...")
-
   for(num <- numbers)
     println(num)
 
