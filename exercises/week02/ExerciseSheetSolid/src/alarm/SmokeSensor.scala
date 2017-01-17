@@ -3,7 +3,7 @@ package alarm
 /**
   * Created by Alexander Worton on 17/01/2017.
   */
-class SmokeSensor extends Sensor {
+class SmokeSensor extends BatterySensor {
   override def isTriggered: Boolean = ???
 
   override def getLocation: String = ???

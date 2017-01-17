@@ -3,12 +3,16 @@ package alarm
 /**
   * Created by Alexander Worton on 17/01/2017.
   */
-class FireSensor extends Sensor{
-  override def isTriggered: Boolean = ???
+class FireSensor(location: String) extends BatterySensor{
 
-  override def getLocation: String = ???
+  override def isTriggered: Boolean = {
+    drainBattery(10)
+    r.nextInt(100) < 5
+  }
 
-  override def getSensorType: String = ???
+  override def getLocation: String = location
 
-  override def getBatteryPercentage: Int = ???
+  override def getSensorType: String = "Fire sensor"
+
+  override def getBatteryPercentage: Int = battery
 }
