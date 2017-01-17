@@ -18,8 +18,10 @@ class ControlUnit {
     //Responsibility: poll sensors
     for (sensor: Sensor <- sensors) {
       if (sensor.isTriggered)
+        //Responsibility: Render output
         System.out.println("A " + sensor.getSensorType + " sensor was triggered at " + sensor.getLocation);
       else
+        //Responsibility: Render output
         System.out.println("Polled " + sensor.getSensorType + " at " + sensor.getLocation + " successfully");
     }
   }
