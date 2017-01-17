@@ -5,6 +5,8 @@ package alarm
   */
 class FireSensor(location: String) extends BatterySensor{
 
+  def this() = this(null)
+
   override def isTriggered: Boolean = {
     drainBattery(10)
     r.nextInt(100) < 5
@@ -12,7 +14,7 @@ class FireSensor(location: String) extends BatterySensor{
 
   override def getLocation: String = location
 
-  override def getSensorType: String = "Fire sensor"
+  override def getSensorType: String = "Fire"
 
-  override def getBatteryPercentage: Int = battery
+  override def getBatteryPercentage: Double = battery
 }
