@@ -3,7 +3,7 @@ package alarm
 /**
   * Created by Alexander Worton on 17/01/2017.
   */
-class FireSensor(location: String) extends BatterySensor{
+class FireSensor (location: String) extends BatterySensor{
 
   def this() = this(null)
 
