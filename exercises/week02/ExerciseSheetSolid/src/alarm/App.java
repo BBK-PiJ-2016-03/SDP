@@ -17,6 +17,10 @@ public class App {
 
     ControlUnit controlUnit = new ControlUnit(sensors, poller);
 
+    handleUserInput(controlUnit);
+  }
+
+  private static void handleUserInput(ControlUnit controlUnit){
     Scanner scanner = new Scanner(System.in);
     String input = "";
     while (!input.equals(EXIT)) {
@@ -27,17 +31,4 @@ public class App {
       }
     }
   }
-
-//  private static List<Sensor> getSensors() {
-//    java.util.List<Sensor> sensors = IntStream.range(1,5)
-//            .mapToObj(i -> i)
-//            .flatMap(i -> (Arrays.asList(new FireSensor("Unknown"), new SmokeSensor("Unknown")).stream()))
-//            .collect(Collectors.toList());
-//    List<Sensor> scalaSensors = new List<>();
-//
-//    for(Sensor s : sensors)
-//      scalaSensors.foldLeft(s);
-//
-//    return scalaSensors;
-//  }
 }
