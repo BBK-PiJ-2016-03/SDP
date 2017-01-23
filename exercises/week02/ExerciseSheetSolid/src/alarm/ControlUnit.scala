@@ -13,6 +13,8 @@ class ControlUnit (sensors: List[Sensor], sensorPoller: SensorPoller) {
   def pollSensors = {
     if(sensors != null && sensorPoller != null)
       sensorPoller.poll(sensors)
+    else
+      println("Control Unit has not been populated with sensors / sensorPoller")
   }
 
 
