@@ -1,7 +1,6 @@
 package alarm
 
 import java.time.{LocalDate, LocalDateTime, LocalTime}
-import java.util.function.Predicate;
 
 /**
   * Created by Alexander Worton on 23/01/2017.
@@ -11,11 +10,11 @@ class SecurityControlUnit (sensors: List[Sensor], sensorPoller: SensorPoller) ex
     val tenPm = LocalTime.of(22,0)
     val sixAm = LocalTime.of(6,0)
 
-    if(checkTime(tenPm, sixAm))
+    if(timeCheck(tenPm, sixAm))
       super.pollSensors
   }
 
-  def checkTime(from: LocalTime, to: LocalTime): Boolean ={
+  def timeCheck(from: LocalTime, to: LocalTime): Boolean ={
     val today = LocalDate.now()
     val afterFrom: Boolean = !LocalDateTime.now().isBefore(LocalDateTime.of(today, from))
     val beforeTo: Boolean  = !LocalDateTime.now().isAfter(LocalDateTime.of(today, to))
