@@ -11,7 +11,8 @@ object App {
 
   @throws[IOException]
   def main(args: Array[String]) {
-    val hazardControlUnit: ControlUnit = new ControlUnit(Populate.getHazardSensors, new SensorPollerBattery(new RendererConsole))
+    val hazardControlUnit: ControlUnit = new ControlUnit(Populate.getHazardSensors, new SensorPollerGeneric(new RendererConsole))
+    val securityControlUnit: SecurityControlUnit = new SecurityControlUnit(Populate.getSecuritySensors, new SensorPollerGeneric(new RendererConsole))
     val scanner: Scanner = new Scanner(System.in)
     var input: String = ""
     while ((input != EXIT)) {
@@ -20,6 +21,7 @@ object App {
         input = scanner.nextLine
         if (input == POLL) {
           hazardControlUnit.pollSensors
+          securityControlUnit.pollSensors
         }
       }
     }
