@@ -10,6 +10,4 @@ trait Sensor {
 
   def getSensorType: String
 
-  def getBatteryPercentage: Double
-
 }
