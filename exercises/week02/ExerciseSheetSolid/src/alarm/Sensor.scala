@@ -10,4 +10,9 @@ trait Sensor {
 
   def getSensorType: String
 
+  /**
+    * run the set of Notifiers attached to this sensor
+    */
+  def executeNotifications: Unit
+
 }

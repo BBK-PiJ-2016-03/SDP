@@ -9,8 +9,11 @@ class SensorPollerGeneric(renderer: Renderer) extends SensorPoller{
   }
 
   def checkTriggered(sensor:Sensor) = {
-    if (sensor.isTriggered)
+    if (sensor.isTriggered){
       renderer.renderTrigger(sensor)
+      sensor.executeNotifications
+    }
+
     else
       renderer.renderPolled(sensor)
   }
