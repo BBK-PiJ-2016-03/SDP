@@ -1,5 +1,6 @@
 package alarm;
 
+import alarm.sensors.FireSensor;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
