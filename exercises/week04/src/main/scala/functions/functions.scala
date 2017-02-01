@@ -11,17 +11,23 @@ object Funcs {
      * @param ls: List[A] the list to process
      * @return A list containing all but the first element of ls
      */
-     def tail[A](ls: List[A]): List[A] = ???
+     def tail[A](ls: List[A]): List[A] = ls match {
+       case Nil => throw new IllegalArgumentException
+       case _ :: tail => tail
+     }
 
     /**
      * setHead replaces the first value in a list with a given value. If the
      * list is empty, it adds the value to the front of the list.
      * @param ls: List[A] the list to be changed
      * @param a: A the value that will replace the head of ls
-     * @return a list whose head is `a' and whose tail is all but the first
+     * @return a list whose head is 'a' and whose tail is all but the first
      * element of ls.
      */
-     def setHead[A](ls: List[A], a: A):List[A] = ???
+     def setHead[A](ls: List[A], a: A):List[A] = ls match{
+       case Nil => a :: Nil
+       case head :: tail => a :: tail
+     }
 
     /**
      * drop removes n elements from the given list. If n is greater than the
@@ -30,7 +36,11 @@ object Funcs {
      * @param n: Int the number of elements to drop.
      * @return a list with the first n elements of ls removed, or an empty list.
      */
-     def drop[A](ls: List[A], n: Int): List[A] = ???
+     def drop[A](ls: List[A], n: Int): List[A] = ls match {
+       case Nil => Nil
+       case a :: tail if (n > 1) => drop(tail, n-1)
+       case a :: tail if(n == 1) => tail
+     }
 
     /**
      * init takes a list and removes the last element.
@@ -39,11 +49,15 @@ object Funcs {
      * @param ls: List[A] the list to be changed.
      * @return a list with the last element of ls removed.
      */
-     def init[A](ls: List[A]):List[A] = ???
+     def init[A](ls: List[A]):List[A] = ls match{
+       case Nil => throw new IllegalArgumentException
+       case a :: Nil => Nil
+       case a :: tail => a :: init(tail)
+     }
 
     // LIST FOLDING
 
-    /*
+    /**
      * foldLeft reduces a list down to a single value by iteratively applying a
      * function over the elements of the list and carrying the cumulative result
      * along.
@@ -54,7 +68,10 @@ object Funcs {
      * list and the cumulative value.
      * @return the final valued.
      */
-    def foldLeft[A,B](ls: List[A], z: B)(f: (B, A) => B): B = ???
+    def foldLeft[A,B](ls: List[A], z: B)(f: (B, A) => B): B = ls match {
+          case  a :: Nil => f(z, a)
+          case a :: tail => foldLeft(tail, f(z, a))(f)
+    }
 
     /**
      * Use your implementation of foldLeft to implement these functions:
