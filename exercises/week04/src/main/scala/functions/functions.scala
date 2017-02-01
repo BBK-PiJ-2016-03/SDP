@@ -69,8 +69,9 @@ object Funcs {
      * @return the final valued.
      */
     def foldLeft[A,B](ls: List[A], z: B)(f: (B, A) => B): B = ls match {
-          case  a :: Nil => f(z, a)
-          case a :: tail => foldLeft(tail, f(z, a))(f)
+      case Nil => z
+      case a :: Nil => f(z, a)
+      case a :: tail => foldLeft(tail, f(z, a))(f)
     }
 
     /**
@@ -85,9 +86,9 @@ object Funcs {
      * the sublists into one long list. For example, flatten(List(List(1,2,3),
      * List(4,5,6))) produces List(1,2,3,4,5,6).
      */
-     def sum(ls: List[Double]): Double = ???
-     def product(ls: List[Double]): Double = ???
-     def length[A](ls: List[A]): Int = ???
+     def sum(ls: List[Double]): Double = foldLeft[Double, Double](ls, 0)((acc, e) => acc + e)
+     def product(ls: List[Double]): Double = foldLeft[Double, Double](ls, 1)((acc, e) => acc * e)
+     def length[A](ls: List[A]): Int = foldLeft[A, Int](ls, 0)((acc, e) => acc + 1)
      def reverse[A](ls: List[A]): List[A] = ???
      def flatten[A](ls: List[List[A]]): List[A] = ???
 
