@@ -145,7 +145,14 @@ object Funcs {
      * length is greater than 0.
      * @return the average value of the largest values in the pairs.
      */
-     def maxAverage(ls: List[(Double,Double)]): Double = ???
+     def maxAverage(ls: List[(Double,Double)]): Double = {
+       val mappedList = map(ls)(e => {
+         if(e._1 > e._2) return e._1
+         e._2
+       })
+
+       foldLeft(mappedList, 0.0)((acc, e) => (acc + e) / 2.0)
+     }
 
     /**
      * variance takes a List[Double] and calculates the squared distance
