@@ -17,7 +17,7 @@ object ScalaBasics {
    * @param b operand b
    * @return the sum
    */
-  def add(a: Int, b: Int): Int = a+b
+  def add(a: Int, b: Int): Int = a + b
 
   /**
    * Write a function that returns the inclusive Range from start to end.
@@ -55,9 +55,10 @@ object ScalaBasics {
   def minWhile(r: Array[Int]): Int = {
     var min = Integer.MAX_VALUE
     var i = 0;
-    while(i < r.size){
-      if(r(i) < min)
+    while(i < r.size) {
+      if (r(i) < min) {
         min = r(i)
+      }
       i+=1
     }
     min
@@ -101,12 +102,12 @@ object ScalaBasics {
   def minRecursive(r: Array[Int]): Int = {
     if(r.size < 2) return r(0)
 
-    if(r.size == 2 && r(0) > r(1)) return r(0)
-    else if(r.size == 2) return r(1)
+    if(r.size == 2 && r(0) > r(1)) {return r(0)}
+    else if(r.size == 2) {return r(1)}
 
-    if(minRecursive(r.slice(1,r.size)) < r(0))
-      return minRecursive(r.slice(1,r.size))
-    r(0)
+    if(minRecursive(r.slice(1,r.size)) > r(0))
+      return r(0)
+    minRecursive(r.slice(1,r.size))
   }
 
   /**
@@ -170,7 +171,7 @@ object ScalaBasics {
   }
 
   /**
-   * You don't have to complete this one as we've removed it from the list 
+   * You don't have to complete this one as we've removed it from the list
    * of required functions.
    *
    * Sum the characters (as integers) provided as arguments to this method.
@@ -183,7 +184,13 @@ object ScalaBasics {
    * @param cc 0 or more characters
    * @return the sum of the ASCII integers corresponding with the character.
    */
-  //def sumChars(cc: Char*): Int = ???
+  def sumChars(cc: Char*): Int = {
+    var total = 0
+    for(c <- cc){
+      total += c.toInt
+    }
+    total
+  }
 
   /**
    * Counts the number of space delimited words in the provided array of strings.
