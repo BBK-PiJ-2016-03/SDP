@@ -1,7 +1,7 @@
 package functions
 
 import org.scalatest.FunSuite
-import functions.Funcs._
+import functions.Funcs.{tail, setHead, drop, init, foldLeft, sum, product, length, reverse, flatten, map, filter, flatMap, maxAverage, variance}
 import support.TreeTraversals
 
 class FunctionsTestSuite extends FunSuite {

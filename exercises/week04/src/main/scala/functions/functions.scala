@@ -89,7 +89,7 @@ object Funcs {
      def sum(ls: List[Double]): Double = foldLeft[Double, Double](ls, 0)((acc, e) => acc + e)
      def product(ls: List[Double]): Double = foldLeft[Double, Double](ls, 1)((acc, e) => acc * e)
      def length[A](ls: List[A]): Int = foldLeft[A, Int](ls, 0)((acc, e) => acc + 1)
-     def reverse[A](ls: List[A]): List[A] = ???
+     def reverse[A](ls: List[A]): List[A] = foldLeft[A, List[A]](ls, Nil)((acc, e) => e :: acc)
      def flatten[A](ls: List[List[A]]): List[A] = ???
 
     // MAP AND FILTER
