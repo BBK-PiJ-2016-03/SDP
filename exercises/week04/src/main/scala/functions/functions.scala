@@ -50,10 +50,10 @@ object Funcs {
      * @return a list with the last element of ls removed.
      */
      def init[A](ls: List[A]):List[A] = ls match{
-       case Nil => throw new IllegalArgumentException
-       case a :: Nil => Nil
-       case a :: tail => a :: init(tail)
-     }
+    case Nil => throw new IllegalArgumentException
+    case a :: Nil => Nil
+    case a :: tail => a :: init(tail)
+  }
 
     // LIST FOLDING
 
@@ -90,7 +90,7 @@ object Funcs {
      def product(ls: List[Double]): Double = foldLeft[Double, Double](ls, 1)((acc, e) => acc * e)
      def length[A](ls: List[A]): Int = foldLeft[A, Int](ls, 0)((acc, e) => acc + 1)
      def reverse[A](ls: List[A]): List[A] = foldLeft[A, List[A]](ls, Nil)((acc, e) => e :: acc)
-     def flatten[A](ls: List[List[A]]): List[A] = ???
+     def flatten[A](ls: List[List[A]]): List[A] = foldLeft[List[A], List[A]](ls, Nil)((acc, e) => acc ::: e)
 
     // MAP AND FILTER
 
@@ -102,7 +102,10 @@ object Funcs {
      * @param f: A => B the function to be applied to each element of the input.
      * @return the resulting list from applying f to each element of ls.
      */
-     def map[A,B](ls: List[A])(f: A => B): List[B] = ???
+     def map[A,B](ls: List[A])(f: A => B): List[B] = ls match{
+       case Nil => Nil
+       case head :: tail => f(head) :: map(tail)(f)
+     }
 
     /**
      * filter removes all elements from a list for which a given predicate
