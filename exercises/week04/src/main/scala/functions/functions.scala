@@ -147,12 +147,7 @@ object Funcs {
      */
      def maxAverage(ls: List[(Double,Double)]): Double = {
        val mappedList = map(ls)(e => {
-         print(s"${e._1}, ${e._2}: ")
-         if(e._1 > e._2) {
-           println(e._1)
-           return e._1
-         }
-         println(e._2)
+         if(e._1 > e._2) return e._1
          e._2
        })
        val total = foldLeft(mappedList, 0.0)((acc, e) => acc + e)
@@ -170,5 +165,9 @@ object Funcs {
      * @param ls: List[Double] a list of values, whose length is greater than 0.
      * @param return the variance of the input.
      */
-     def variance(ls: List[Double]): Double = ???
+     def variance(ls: List[Double]): Double = {
+       val mean = foldLeft(ls, 0.0)((acc, e) => acc + e) / ls.size
+       val variance = map(ls)(e => (e - mean) * (e - mean))
+       foldLeft(variance, 0.0)((acc, e) => acc + e) / variance.size
+     }
 }
