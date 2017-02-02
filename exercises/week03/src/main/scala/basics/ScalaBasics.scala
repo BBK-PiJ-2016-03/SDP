@@ -1,7 +1,5 @@
 package basics
 
-import java.util.stream.Collectors
-
 /**
  * This is a singleton object containing the functions you need
  * to implement. Please make sure to read the documentation associated
