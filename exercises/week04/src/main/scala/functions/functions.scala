@@ -147,11 +147,16 @@ object Funcs {
      */
      def maxAverage(ls: List[(Double,Double)]): Double = {
        val mappedList = map(ls)(e => {
-         if(e._1 > e._2) return e._1
+         print(s"${e._1}, ${e._2}: ")
+         if(e._1 > e._2) {
+           println(e._1)
+           return e._1
+         }
+         println(e._2)
          e._2
        })
-
-       foldLeft(mappedList, 0.0)((acc, e) => (acc + e) / 2.0)
+       val total = foldLeft(mappedList, 0.0)((acc, e) => acc + e)
+       total / mappedList.size
      }
 
     /**
