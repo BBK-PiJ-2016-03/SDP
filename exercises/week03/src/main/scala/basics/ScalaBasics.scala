@@ -99,16 +99,7 @@ object ScalaBasics {
    * @param r the array of integers
    * @return the minimum integer in the array
    */
-  def minRecursive(r: Array[Int]): Int = {
-    if(r.size < 2) return r(0)
-
-    if(r.size == 2 && r(0) > r(1)) {return r(0)}
-    else if(r.size == 2) {return r(1)}
-
-    if(minRecursive(r.slice(1,r.size)) > r(0))
-      return r(0)
-    minRecursive(r.slice(1,r.size))
-  }
+  def minRecursive(r: Array[Int]): Int = r.reduce((acc, e) => if( acc < e) acc else e)
 
   /**
    * Return the base 36 equivalent of the BitInt b.
