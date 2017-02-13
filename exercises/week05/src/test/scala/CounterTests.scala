@@ -43,4 +43,10 @@ class CounterTests extends FunSuite with BeforeAndAfter{
     })
   }
 
+  test("adjust applies a supplied adder"){
+    (1 to 100 by 2).foreach(i => {
+      assert(counter.adjust(new Adder(i)).count == i)
+    })
+  }
+
 }

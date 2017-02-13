@@ -6,4 +6,5 @@ package week05
 case class CounterCase(count: Int = 0){
   def inc(change: Int = 1): CounterCase = this.copy(this.count + change)
   def dec(change: Int = 1): CounterCase = this.copy(this.count - change)
+  def adjust(adder:Adder): CounterCase = this.copy(adder add this.count)
 }

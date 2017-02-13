@@ -45,5 +45,11 @@ class CounterCaseTests extends FunSpec with BeforeAndAfter{
         assert(counter.inc(i).dec(i).count == 0)
       })
     }
+
+    it("should take and apply an adder with embedded adjustment value"){
+      (1 to 100 by 2).foreach(i => {
+        assert(counter.adjust(new Adder(i)).count == i)
+      })
+    }
   }
 }
