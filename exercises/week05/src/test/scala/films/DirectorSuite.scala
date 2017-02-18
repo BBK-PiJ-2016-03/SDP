@@ -12,8 +12,23 @@ class DirectorSuite extends FunSpec with BeforeAndAfter{
   private val yearOfBirth = 1950
   private var director: Director = _
 
+  private val yearOfBirth2 = 1920
+  private var director2: Director = _
+
   before{
     director = new Director(firstName, lastName, yearOfBirth)
+  }
+
+  describe("Director"){
+    it("should take two directors and return the oldest of the two"){
+      director2 = new Director(firstName, lastName, yearOfBirth2)
+      assert(director2 == Director.older(director, director2))
+      assert(director2 == Director.older(director2, director))
+    }
+
+    it("should return a new director when applied"){
+      assert(director == Director(firstName, lastName, yearOfBirth))
+    }
   }
 
   describe("a Director"){

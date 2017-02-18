@@ -11,13 +11,33 @@ class FilmSuite extends FunSpec with BeforeAndAfter{
   private val yearOfRelease = 1990
   private val imdbRating = 7.6
   private val director = new Director("John", "McTiernan", 1951)
+  private val director2 = new Director("Sam", "Smith", 1996)
   private var film: Film = _
+
+  private var film2: Film = _
 
   before{
     film = new Film(name, yearOfRelease, imdbRating, director)
+    film2 = new Film("Bleaugh", 2016, 0.1, director2)
   }
 
   describe("Film"){
+    it("should take two films and return the oldest director at the time of shooting"){
+      assert(director == Film.oldestDirectorAtTheTime(film, film2))
+      assert(director == Film.oldestDirectorAtTheTime(film2, film))
+    }
+
+    it("should take two films and return the highest imdb of the two"){
+      assert(imdbRating == Film.highestRating(film, film2))
+      assert(imdbRating == Film.highestRating(film2, film))
+    }
+
+    it("should return a new film when applied"){
+      assert(film == Film(name, yearOfRelease, imdbRating, director))
+    }
+  }
+
+  describe("a film"){
     it("should be created with a name, year of release, imdbRating and director"){
       assert(name == film.name)
       assert(yearOfRelease == film.yearOfRelease)
@@ -31,8 +51,8 @@ class FilmSuite extends FunSpec with BeforeAndAfter{
     }
 
     it("should accept a Director and determine whether the film is directed by them"){
-      assert(true == film.isDirectedBy(director))
-      assert(false == film.isDirectedBy(new Director("Christopher", "Nolan", 1970)))
+      assert(film.isDirectedBy(director))
+      assert(!film.isDirectedBy(new Director("Christopher", "Nolan", 1970)))
     }
 
     it("should produce a copy of all non overridden attributes"){
