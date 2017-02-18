@@ -13,11 +13,9 @@ class FilmSuite extends FunSpec with BeforeAndAfter{
   private val imdbRating = 7.6
   private val director = new Director("John", "McTiernan", 1951)
   private var film: Film = _
-  private var currentDate: LocalDate = _
 
   before{
     film = new Film(name, yearOfRelease, imdbRating, director)
-    currentDate = LocalDate.now()
   }
 
   describe("Film"){
@@ -29,7 +27,7 @@ class FilmSuite extends FunSpec with BeforeAndAfter{
     }
 
     it("should return the age of the director at the time of release"){
-      val roughAge = currentDate.getYear - 1951
+      val roughAge = film.yearOfRelease - 1951
       assert(roughAge == film.directorsAge)
     }
 
