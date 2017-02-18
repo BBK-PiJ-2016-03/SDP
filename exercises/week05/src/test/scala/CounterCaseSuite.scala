@@ -6,7 +6,7 @@ import org.scalatest
 /**
   * Created by Alexander Worton on 13/02/2017.
   */
-class CounterCaseTests extends FunSpec with BeforeAndAfter{
+class CounterCaseSuite extends FunSpec with BeforeAndAfter{
 
   private var counter:CounterCase = _
 
