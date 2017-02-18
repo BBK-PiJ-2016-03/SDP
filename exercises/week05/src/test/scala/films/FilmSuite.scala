@@ -1,7 +1,6 @@
 package films
 
 import org.scalatest.{BeforeAndAfter, FunSpec}
-import java.time.LocalDate
 
 /**
   * Created by aworton on 18/02/17.
