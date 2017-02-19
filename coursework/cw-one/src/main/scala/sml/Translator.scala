@@ -18,19 +18,34 @@ class Translator(fileName: String) {
     val labels = m.labels
     var program = m.prog
     import scala.io.Source
+    import scala.reflect.runtime.universe._
     val lines = Source.fromFile(fileName).getLines
     for (line <- lines) {
       val fields = line.split(" ")
       if (fields.length > 0) {
         labels.add(fields(0))
-        fields(1) match {
-          case ADD =>
-            program = program :+ AddInstruction(fields(0), fields(2).toInt, fields(3).toInt, fields(4).toInt)
-          case LIN =>
-            program = program :+ LinInstruction(fields(0), fields(2).toInt, fields(3).toInt)
-          case x =>
-            println(s"Unknown instruction $x")
+
+        //locate class matching fields(1)
+        //val instructionType = typeOf[Instruction].members.find(symbol => symbol.name.toString.indexOf(fields(1).capitalize) == 0)
+        val instructionType = typeOf[Instruction].members.filter(symbol => {
+          //println("Name: "+symbol.name.toString)
+          symbol.name.toString.indexOf(fields(1).capitalize) == 0
+        })
+
+        println("BaseClasses")
+        //typeOf[Instruction].
+
+        //println(instructionType)
+
+        if(instructionType.isEmpty){
+          println(s"Unknown instruction ${fields(1)}")
         }
+        else{
+          //instantiate
+          program = program :+ instructionType.getClass.getConstructors()(0).newInstance(fields).asInstanceOf[Instruction]
+        }
+
+
       }
     }
     new Machine(labels, program)
