@@ -31,8 +31,10 @@ class AddInstructionSuite extends FunSpec with BeforeAndAfter{
   describe("AddInstruction"){
 
     it("should take two values and return the sum of them"){
+      val start = -1000
+      val end = 1000
 
-      (1 to 1000).foreach(valueR2 => {
+      (start to end by 2).foreach(valueR2 => {
         loadR2Instruction = LinInstruction(label0, register1, valueR2)
         instruction = AddInstruction(label2, register0, register1, register2)
         machine = Machine(labels, Vector(loadR2Instruction, loadR3Instruction, instruction))
