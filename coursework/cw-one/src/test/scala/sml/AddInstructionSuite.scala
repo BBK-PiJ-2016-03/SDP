@@ -12,9 +12,9 @@ class AddInstructionSuite extends FunSpec with BeforeAndAfter{
   private var loadR3Instruction: LinInstruction = _
   private var machine: Machine = _
   private var labels: Labels = _
-  private val label0 = "f0"
-  private val label1 = "f1"
-  private val label2 = "f2"
+  private final val label0 = "f0"
+  private final val label1 = "f1"
+  private final val label2 = "f2"
   private final val increase = 10
   private final val register0 = 0
   private final val register1 = 1
