@@ -3,13 +3,17 @@ package sml
 /**
   * Created by aworton on 19/02/17.
   */
-class SubInstruction(label: String, op: String, override val result: Int, override val op1: Int, override val op2: Int)
-  extends AddInstruction(label, op, result, op1, op2){
+class SubInstruction(label: String, op: String, val result: Int, val op1: Int, val op2: Int)
+  extends Instruction(label, op){
 
-  override def execute(m: Machine) {
+  def execute(m: Machine) {
     val value1 = m.regs(op1)
     val value2 = m.regs(op2)
     m.regs(result) = value1 - value2
+  }
+
+  override def toString(): String = {
+    super.toString + " " + op1 + " - " + op2 + " to " + result + "\n"
   }
 }
 

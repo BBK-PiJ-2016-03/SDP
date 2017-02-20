@@ -28,22 +28,22 @@ class SubInstructionSuite extends FunSpec with BeforeAndAfter{
     loadR3Instruction = LinInstruction(label1, register2, decrease)
   }
 
-  describe("SubInstruction"){
-
-    it("should take two values and return the result of subtracting the second from the first"){
-      val start = -1000
-      val end = 1000
-
-      (start to end by 2).foreach(valueR2 => {
-        loadR2Instruction = LinInstruction(label0, register1, valueR2)
-        instruction = SubInstruction(label2, register0, register1, register2)
-        machine = Machine(labels, Vector(loadR2Instruction, loadR3Instruction, instruction))
-        machine.execute()
-        assert(machine.regs(register0) == (valueR2 - decrease))
-      })
-
-    }
-  }
+//  describe("SubInstruction"){
+//
+//    it("should take two values and return the result of subtracting the second from the first"){
+//      val start = -1000
+//      val end = 1000
+//
+//      (start to end by 2).foreach(valueR2 => {
+//        loadR2Instruction = LinInstruction(label0, register1, valueR2)
+//        instruction = SubInstruction(label2, register0, register1, register2)
+//        machine = Machine(labels, Vector(loadR2Instruction, loadR3Instruction, instruction))
+//        machine.execute()
+//        assert(machine.regs(register0) == (valueR2 - decrease))
+//      })
+//
+//    }
+//  }
 
 }
 

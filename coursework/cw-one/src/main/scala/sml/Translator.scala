@@ -73,6 +73,10 @@ class Translator(fileName: String) {
         arguments.foreach(arg => println(arg))
         None
       }
+      case e: ClassCastException => {
+        print(instructionName + " found, but is not an Instruction: ")
+        None
+      }
     }
   }
 
