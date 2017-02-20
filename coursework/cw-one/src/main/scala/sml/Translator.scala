@@ -32,6 +32,11 @@ class Translator(fileName: String) {
     new Machine(labels, program)
   }
 
+  /**
+    * processor to return the instruction name from the unprocessed fields
+    * @param fields the unprocessed fields from the instruction string
+    * @return the name of the instruction, located at the second position
+    */
   private def getInstructionName(fields: Array[String]): String = fields(1)
 
   /**
@@ -46,9 +51,23 @@ class Translator(fileName: String) {
     labels
   }
 
+  /**
+    * convert all the fields after the first two to int if they canbe, else leave them as string
+    * as these are the only two types of argument supported. This covers thr BNZ type as well as
+    * all the other instructions.
+    * @param fields the unprocessed arguments
+    * @return an array of AnyRef holding the type processed arguments
+    */
   private def getArgumentsFromFields(fields: Array[String]): Array[AnyRef] = {
     if(fields.length > 2) {
-      ((fields.splitAt(2)_1) ++ ((fields.splitAt(2)_2)).map(argument => argument.toInt)).asInstanceOf[Array[AnyRef]]
+      ((fields.splitAt(2)_1) ++ ((fields.splitAt(2)_2)).map(argument => {
+        try {
+          argument.toInt
+        }
+        catch{
+          case e: NumberFormatException => argument
+        }
+      })).asInstanceOf[Array[AnyRef]]
     }
     else {
       Array()
