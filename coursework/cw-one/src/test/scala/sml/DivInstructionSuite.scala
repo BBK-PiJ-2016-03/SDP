@@ -50,8 +50,5 @@ class DivInstructionSuite extends FunSpec with BeforeAndAfter{
         machine.execute()
       }
     }
-
-
   }
-
 }

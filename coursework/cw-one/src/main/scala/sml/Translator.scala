@@ -25,7 +25,7 @@ class Translator(fileName: String) {
         program = addInstructionToProgram(instructionInstance.get, program, getInstructionName(fields))
       }
       else{
-        println("Instruction " + getInstructionName(fields) + " not recognised")
+        println(s"Unknown instruction ${getInstructionName(fields)}")
       }
     })
 
@@ -106,14 +106,8 @@ class Translator(fileName: String) {
     * @param instruction the name of the instruction being added
     */
   private def addInstructionToProgram(instructionInstance: Instruction, program: Vector[Instruction], instruction: String): Vector[Instruction] = {
-    if(instructionInstance == None){
-      println(s"Unknown instruction ${instruction}")
-      program
-    }
-    else{
-      val updatedProgram = program :+ instructionInstance
-      updatedProgram
-    }
+    val updatedProgram = program :+ instructionInstance
+    updatedProgram
   }
 
   /**
