@@ -21,11 +21,8 @@ class Translator(fileName: String) {
       val arguments: Array[AnyRef] = getArgumentsFromFields(fields)
       val instructionInstance = instantiateInstructionClass(getInstructionName(fields), arguments)
 
-      if(instructionInstance != None) {
+      if(instructionInstance.isDefined) {
         program = addInstructionToProgram(instructionInstance.get, program, getInstructionName(fields))
-      }
-      else{
-        println(s"Unknown instruction ${getInstructionName(fields)}")
       }
     })
 
@@ -86,7 +83,10 @@ class Translator(fileName: String) {
       Some(instructionType.getConstructors()(0).newInstance(arguments:_*).asInstanceOf[Instruction])
     }
     catch{
-      case e: ClassNotFoundException => None
+      case e: ClassNotFoundException => {
+        println(s"Unknown instruction $instructionName")
+        None
+      }
       case e: IllegalArgumentException => {
         println("Wrong number of arguments: ")
         arguments.foreach(arg => println(arg))
