@@ -8,8 +8,8 @@ import org.scalatest.{BeforeAndAfter, FunSpec}
 class AddInstructionSuite extends FunSpec with BeforeAndAfter{
 
   private var instruction: AddInstruction = _
+  private var loadR1Instruction: LinInstruction = _
   private var loadR2Instruction: LinInstruction = _
-  private var loadR3Instruction: LinInstruction = _
   private var machine: Machine = _
   private var labels: Labels = _
   private final val label0 = "f0"
@@ -25,7 +25,7 @@ class AddInstructionSuite extends FunSpec with BeforeAndAfter{
     labels.add(label0)
     labels.add(label1)
     labels.add(label2)
-    loadR3Instruction = LinInstruction(label1, register2, increase)
+    loadR2Instruction = LinInstruction(label1, register2, increase)
   }
 
   describe("AddInstruction"){
@@ -35,9 +35,9 @@ class AddInstructionSuite extends FunSpec with BeforeAndAfter{
       val end = 1000
 
       (start to end by 2).foreach(valueR2 => {
-        loadR2Instruction = LinInstruction(label0, register1, valueR2)
+        loadR1Instruction = LinInstruction(label0, register1, valueR2)
         instruction = AddInstruction(label2, register0, register1, register2)
-        machine = Machine(labels, Vector(loadR2Instruction, loadR3Instruction, instruction))
+        machine = Machine(labels, Vector(loadR1Instruction, loadR2Instruction, instruction))
         machine.execute()
         assert(machine.regs(register0) == (valueR2 + increase))
       })

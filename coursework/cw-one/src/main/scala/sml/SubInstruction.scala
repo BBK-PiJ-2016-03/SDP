@@ -3,7 +3,7 @@ package sml
 /**
   * Created by aworton on 19/02/17.
   */
-class SubInstruction(label: String, op: String, val result: Int, val op1: Int, val op2: Int)
+class SubInstruction (label: String, op: String, val result: Int, val op1: Int, val op2: Int)
   extends Instruction(label, op){
 
   def execute(m: Machine) {
