@@ -3,11 +3,11 @@ package observer
 /**
   * Created by aworton on 27/02/17.
   */
-trait Commentary {
+trait Subject {
 
-  def registerSubscriber(subscriber: Subscriber)
+  def registerSubscriber(subscriber: Observer)
 
-  def deregisterSubscriber(subscriber: Subscriber)
+  def deregisterSubscriber(subscriber: Observer)
 
   def notifyObservers()
 

@@ -4,14 +4,14 @@ package observer
   * Created by aworton on 27/02/17.
   */
 object Main extends App{
-  (1 to 3).foreach( id => new ConcreteSubscriber(id, ConcreteCommentary))
+  (1 to 3).foreach( id => new ConcreteObserver(id, ConcreteSubject))
 
-  ConcreteCommentary.postNewCommentary("Off to a great start!")
-  ConcreteCommentary.postNewCommentary("Wowzer!")
+  ConcreteSubject.postNewCommentary("Off to a great start!")
+  ConcreteSubject.postNewCommentary("Wowzer!")
 
-  new ConcreteSubscriber(4, ConcreteCommentary)
+  new ConcreteObserver(4, ConcreteSubject)
 
-  ConcreteCommentary.postNewCommentary("Sports Triumph!")
-  ConcreteCommentary.postNewCommentary("They've scored!")
+  ConcreteSubject.postNewCommentary("Sports Triumph!")
+  ConcreteSubject.postNewCommentary("They've scored!")
 
 }

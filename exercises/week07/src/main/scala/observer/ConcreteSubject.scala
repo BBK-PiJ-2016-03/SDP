@@ -3,16 +3,16 @@ package observer
 /**
   * Created by aworton on 27/02/17.
   */
-object ConcreteCommentary extends Commentary{
+object ConcreteSubject extends Subject{
 
   var lastCommentary: String = "No posts yet"
-  var subscribers: List[Subscriber] = Nil
+  var subscribers: List[Observer] = Nil
 
-  override def registerSubscriber(subscriber: Subscriber): Unit = {
+  override def registerSubscriber(subscriber: Observer): Unit = {
     subscribers = subscriber :: subscribers
   }
 
-  override def deregisterSubscriber(subscriber: Subscriber): Unit = {
+  override def deregisterSubscriber(subscriber: Observer): Unit = {
     subscribers = subscribers.filter(_ != subscriber)
   }
 

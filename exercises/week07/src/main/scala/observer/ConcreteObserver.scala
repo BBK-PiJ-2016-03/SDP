@@ -3,7 +3,7 @@ package observer
 /**
   * Created by aworton on 27/02/17.
   */
-class ConcreteSubscriber(id: Int, commentary: Commentary) extends Subscriber{
+class ConcreteObserver(id: Int, commentary: Subject) extends Observer{
 
   commentary.registerSubscriber(this)
 
