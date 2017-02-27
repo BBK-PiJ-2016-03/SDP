@@ -11,4 +11,6 @@ trait Commentary {
 
   def notifyObservers()
 
+  def getLatestCommentary(): String
+
 }
