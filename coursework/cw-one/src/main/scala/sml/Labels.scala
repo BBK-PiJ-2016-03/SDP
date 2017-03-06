@@ -9,7 +9,7 @@ case class Labels() {
   override def toString(): String =
     labels.mkString(" : ")
 
-  def add(l: String) = labels = labels :+ l
+  def add(l: String): Unit = labels = labels :+ l
 
-  def apply(k: Int) = labels(k)
+  def apply(k: Int): String = labels(k)
 }

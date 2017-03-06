@@ -49,8 +49,8 @@ class Translator(fileName: String) {
   }
 
   /**
-    * convert all the fields after the first two to int if they canbe, else leave them as string
-    * as these are the only two types of argument supported. This covers thr BNZ type as well as
+    * convert all the fields after the first two to int if they can be, else leave them as string
+    * as these are the only two types of argument supported. This covers the BNZ type as well as
     * all the other instructions.
     * @param fields the unprocessed arguments
     * @return an array of AnyRef holding the type processed arguments
@@ -84,18 +84,16 @@ class Translator(fileName: String) {
     }
     catch{
       case e: ClassNotFoundException => {
-        println(s"Unknown instruction $instructionName")
-        None
+        throw new UnknownInstructionException("Unknown Instruction")
       }
       case e: IllegalArgumentException => {
-        println("Wrong number of arguments: ")
-        arguments.foreach(arg => println(arg))
-        None
+        throw new IllegalArgumentException("Wrong number of arguments")
+
       }
       case e: ClassCastException => {
-        print(instructionName + " found, but is not an Instruction: ")
-        None
+        throw new UnknownInstructionException(s"$instructionName found, but is not an Instruction")
       }
+      case _: Any => None
     }
   }
 
@@ -122,5 +120,7 @@ class Translator(fileName: String) {
   * companion object for Translator class
   */
 object Translator {
-  def apply(file: String) = new Translator(file)
+  def apply(file: String): Translator = new Translator(file)
 }
+
+class UnknownInstructionException(msg: String) extends Exception(msg)

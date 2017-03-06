@@ -7,7 +7,7 @@ import org.scalatest.{BeforeAndAfter, FunSpec}
   */
 class MachineSuite extends FunSpec with BeforeAndAfter{
 
-  private val machine: Machine = Machine(new Labels, Vector())
+  private val machine: Machine = Machine(Labels(), Vector())
 
   describe("Machine"){
 
@@ -15,7 +15,6 @@ class MachineSuite extends FunSpec with BeforeAndAfter{
       (0 to 31).foreach(register => {
         assert(machine.regs(register) == 0)
       })
-
     }
   }
 
