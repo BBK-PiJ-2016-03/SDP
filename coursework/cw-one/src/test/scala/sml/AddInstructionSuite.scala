@@ -1,6 +1,7 @@
 package sml
 
 import org.scalatest.{BeforeAndAfter, FunSpec}
+import sml.library.LabelsFactory
 
 /**
   * Created by aworton on 19/02/17.
@@ -21,10 +22,7 @@ class AddInstructionSuite extends FunSpec with BeforeAndAfter{
   private final val register2 = 2
 
   before{
-    labels = new Labels
-    labels.add(label0)
-    labels.add(label1)
-    labels.add(label2)
+    labels = LabelsFactory.populateLabels(label0, label1, label2)
     loadR2Instruction = LinInstruction(label1, register2, increase)
   }
 
@@ -42,6 +40,11 @@ class AddInstructionSuite extends FunSpec with BeforeAndAfter{
         assert(machine.regs(register0) == (valueR2 + increase))
       })
 
+    }
+
+    it("should return its content when printed"){
+      instruction = AddInstruction(label2, register0, register1, register2)
+      assert(s"$label2: add $register1 + $register2 to $register0\n" == instruction.toString())
     }
   }
 

@@ -118,6 +118,9 @@ class Translator(fileName: String) {
   private def getInstructionClassName(instructionHandle: String): String = "sml." + instructionHandle.capitalize + "Instruction"
 }
 
+/**
+  * companion object for Translator class
+  */
 object Translator {
   def apply(file: String) = new Translator(file)
 }
