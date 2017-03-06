@@ -11,7 +11,7 @@ class OutInstruction(label: String, op: String, val register: Int)
     * @param m the virtual machine to operate on
     */
   override def execute(m: Machine): Unit =  {
-    println(m.regs(register))
+    Console.write(m.regs(register))
   }
 
   /**
