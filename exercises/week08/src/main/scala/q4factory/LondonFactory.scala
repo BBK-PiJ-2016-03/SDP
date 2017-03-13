@@ -1,6 +1,7 @@
 package q4factory
 
-import q4factory.parsers.{LondonErrorParser, LondonFeedbackParser, LondonOrderParser, LondonResponseParser, XMLParser}
+import q4factory.parsers.{LondonErrorParser, LondonFeedbackParser, LondonOrderParser,
+                          LondonResponseParser, XMLParser}
 
 /**
   * @author Alexander Worton.

@@ -5,6 +5,7 @@ package q4factory
   */
 object ParserFactoryProducer {
   def getFactory(parserType: String) = parserType match {
-    case "NYCFactory" => new NYCFactory()
+    case "NYCFactory" => new NYCFactory
+    case "LondonFactory" => new LondonFactory
   }
 }
