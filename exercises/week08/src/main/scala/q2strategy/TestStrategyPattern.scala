@@ -1,4 +1,4 @@
-package strategy
+package q2strategy
 
 /**
   * Created by aworton on 07/03/17.
