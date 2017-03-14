@@ -1,6 +1,6 @@
-package q4factory
+package q4abstractfactory
 
-import q4factory.parsers.{LondonErrorParser, LondonFeedbackParser, LondonOrderParser,
+import q4abstractfactory.parsers.{LondonErrorParser, LondonFeedbackParser, LondonOrderParser,
                           LondonResponseParser, XMLParser}
 
 /**

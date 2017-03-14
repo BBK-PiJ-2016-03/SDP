@@ -1,6 +1,6 @@
-package q4factory
+package q4abstractfactory
 
-import q4factory.parsers.XMLParser
+import q4abstractfactory.parsers.XMLParser
 
 /**
   * Created by Alexander Worton on 13/03/2017.

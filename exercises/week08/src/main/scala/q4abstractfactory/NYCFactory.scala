@@ -1,6 +1,6 @@
-package q4factory
+package q4abstractfactory
 
-import q4factory.parsers.{NycErrorParser, NycFeedbackParser, NycOrderParser, NycResponseParser, XMLParser}
+import q4abstractfactory.parsers.{NycErrorParser, NycFeedbackParser, NycOrderParser, NycResponseParser, XMLParser}
 
 /**
   * @author Alexander Worton.
