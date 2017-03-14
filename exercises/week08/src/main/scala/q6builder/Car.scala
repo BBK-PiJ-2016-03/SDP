@@ -7,7 +7,7 @@ case class Car(var carType: String) {
   private var bodyStyle: String = null
   private var power: String = null
   private var engine: String = null
-  private var breaks: String = null
+  private var brakes: String = null
   private var seats: String = null
   private var windows: String = null
   private var fuelType: String = null
@@ -30,10 +30,10 @@ case class Car(var carType: String) {
     this.engine = engine
   }
 
-  def getBreaks: String = breaks
+  def getBrakes: String = brakes
 
-  def setBreaks(breaks: String) {
-    this.breaks = breaks
+  def setBrakes(breaks: String) {
+    this.brakes = breaks
   }
 
   def getSeats: String = seats
@@ -63,8 +63,8 @@ case class Car(var carType: String) {
     sb.append(power)
     sb.append("\n Engine: ")
     sb.append(engine)
-    sb.append("\n Breaks: ")
-    sb.append(breaks)
+    sb.append("\n Brakes: ")
+    sb.append(brakes)
     sb.append("\n Seats: ")
     sb.append(seats)
     sb.append("\n Windows: ")

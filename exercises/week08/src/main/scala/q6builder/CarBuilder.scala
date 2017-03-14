@@ -4,6 +4,9 @@ package q6builder
   * @author Alexander Worton.
   */
 trait CarBuilder {
+
+  var car:Car
+
   def buildBody: CarBuilder
 
   def buildPower: CarBuilder
@@ -18,5 +21,5 @@ trait CarBuilder {
 
   def buildFuelType: CarBuilder
 
-  def getCar: Car
+  def getCar: Car = car
 }
