@@ -1,4 +1,4 @@
-###Comment on this statement with reference to modularity and construction bloat.
+### Comment on this statement with reference to modularity and construction bloat.  ###
     “In general, the details of object construction, such as instantiating and initialising the 
     components that comprise the object, are kept within the object, often as part of its 
     constructor.”
