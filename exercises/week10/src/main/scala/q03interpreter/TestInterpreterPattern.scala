@@ -22,3 +22,5 @@ object TestInterpreterPattern extends App {
   }
   println("( " + tokenString + " ): " + stack.pop().interpret())
 }
+
+    
