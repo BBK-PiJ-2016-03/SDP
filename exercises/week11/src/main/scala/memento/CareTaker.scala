@@ -8,9 +8,13 @@ case class CareTaker() {
   private val savepointStorage: Map[String, Memento] =
     new HashMap[String, Memento]()
 
-  def saveMemento(memento: Memento, savepointName: String): Unit = ???
+  def saveMemento(memento: Memento, savepointName: String): Unit = {
+    savepointStorage.put(savepointName, memento)
+  }
 
-  def getMemento(savepointName: String): Memento = ???
+  def getMemento(savepointName: String): Memento = {
+    savepointStorage.get(savepointName)
+  }
 
-  def clearSavepoints(): Unit = ???
+  def clearSavepoints(): Unit = savepointStorage.clear()
 }
