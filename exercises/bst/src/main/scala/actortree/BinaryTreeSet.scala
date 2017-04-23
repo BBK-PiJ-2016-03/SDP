@@ -16,6 +16,11 @@ object BinaryTreeSet {
     def id: Int
   }
 
+  trait InternalResponse {
+    def requestor: ActorRef
+    def reply: OperationReply
+  }
+
   /** Request with identifier `id` to insert an element `elem` into the tree.
     * The actor at reference `requester` should be notified when this operation
     * is completed.
@@ -45,12 +50,18 @@ object BinaryTreeSet {
   /** Message to signal successful completion of an insert or remove operation. */
   case class OperationFinished(id: Int) extends OperationReply
 
+  /** Message to base holding OperationReply */
+  case class WrappedResponse(requestor: ActorRef, reply: OperationReply) extends InternalResponse
+
 }
 
 
 class BinaryTreeSet extends Actor {
   import BinaryTreeSet._
   import BinaryTreeNode._
+  import scala.collection.mutable.Queue
+
+  val messageOrder = Queue[Operation]()
 
   def createRoot: ActorRef = context.actorOf(BinaryTreeNode.props(0, initiallyRemoved = true))
 
@@ -62,9 +73,48 @@ class BinaryTreeSet extends Actor {
   // optional
   def receive = normal
 
+  var pendingResponse = false
+
   // optional
   /** Accepts `Operation` and `GC` messages. */
-  val normal: Receive = { case e:Operation => root.forward(e) }
+  val normal: Receive = {
+    case msg:Operation => enqueue(msg)
+    case msg:InternalResponse => forwardResponse(msg)
+  }
+
+  /**
+    * extract the response and forward it in order of receipt
+    * execute the next pending instruction
+    * @param response
+    */
+  def forwardResponse(response: InternalResponse): Unit = {
+    println(s"Received response from children")
+    println(s"Sending ${response.requestor} : ${response.reply}")
+    response.requestor ! response.reply
+
+    if(pendingQueue.size > 0) {
+      val msg = pendingQueue.dequeue()
+      root ! msg
+    } else {
+      pendingResponse = false
+    }
+  }
+
+  /**
+    * if no current operation is underway, send the operation message to root. Otherwise add the
+    * message to the queue for in-order execution.
+    * @param operation the received operation to enqueue
+    */
+  def enqueue(operation: Operation): Unit = {
+    println(s"Received operation")
+    if(!pendingResponse) {
+      root ! operation
+      pendingResponse = true
+    } else{
+      pendingQueue.enqueue(operation)
+    }
+
+  }
 
   // optional
   /** Handles messages while garbage collection is performed.
@@ -103,61 +153,65 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
   // optional
   /** Handles `Operation` messages and `CopyTo` requests. */
   val normal: Receive = {
-    case Insert(requester, id, elem) if elem < this.elem => insert(requester, id, Left, elem)
-    case Insert(requester, id, elem) if elem > this.elem => insert(requester, id, Right, elem)
-    case Contains(requester, id, elem) => contains(requester, id, elem)
-    case Remove(requester, id, elem) => remove(requester, id, elem)
-    case _ => ???
+    case Insert(requester, id, elem) if elem < this.elem
+          => insert(sender, requester, id, Left, elem)
+    case Insert(requester, id, elem) if elem > this.elem
+          => insert(sender, requester, id, Right, elem)
+    case Contains(requester, id, elem) => contains(sender, requester, id, elem)
+    case Remove(requester, id, elem) => remove(sender, requester, id, elem)
+    case _ => println(s"Unknown message")
   }
 
   /**
     * contains handles the check on the current node and appropriate forwarding of message in the
     * event that the message needs to be passed down into nodes in either the left or right subtree
+    * @param base the control actor
     * @param requester the originator of the message
     * @param id the id of the received instruction
     * @param elem the search target value
     */
-  def contains(requester: ActorRef, id: Int, elem: Int): Unit = {
+  def contains(base: ActorRef, requester: ActorRef, id: Int, elem: Int): Unit = {
     // this node is the target node
     if(elem == this.elem) {
-      requester ! ContainsResult(id, true)
+      base ! WrappedResponse(requester, ContainsResult(id, true))
     } else if (elem < this.elem && subNodeAvailable(Left)) {
       //target node is to the left
-      getNode(Left) ! Contains(requester, id, elem)
+      getNode(Left).tell(Contains(requester, id, elem), base)
     }
     else if (elem > this.elem && subNodeAvailable(Right)) {
       //target node is to the right
-      getNode(Right) ! Contains(requester, id, elem)
+      getNode(Right).tell(Contains(requester, id, elem), base)
     }
     else {
       //we have reached the dark depth of the tree and did not locate the requested node.
-      requester ! ContainsResult(id, false)
+      base ! WrappedResponse(requester, ContainsResult(id, false))
     }
   }
 
   /**
     * remove handles the flagging of the current node as removed if it matched the target, or the
     * appropriate message forwarding to nodes in the left or right subtree.
+    * @param base the control actor
     * @param requester the originator of the message
     * @param id the id of the received instruction
     * @param elem the search target value
     */
-  def remove(requester: ActorRef, id: Int, elem: Int): Unit = {
+  def remove(base: ActorRef, requester: ActorRef, id: Int, elem: Int): Unit = {
     // this node is targeted for deletion
     if(elem == this.elem) {
       removed = true
-      requester ! OperationFinished(id)
+      base ! WrappedResponse(requester, OperationFinished(id))
     } else if (elem < this.elem && subNodeAvailable(Left)) {
       //target node is to the left
-      getNode(Left) ! Remove(requester, id, elem)
+      getNode(Left).tell(Remove(requester, id, elem), base)
     }
     else if (elem > this.elem && subNodeAvailable(Right)) {
       //target node is to the right
-      getNode(Right) ! Remove(requester, id, elem)
+      getNode(Right).tell(Remove(requester, id, elem), base)
     }
     else {
       //we have reached the dark depth of the tree and did not locate a node for deletion.
-      requester ! OperationFinished(id)
+      base ! WrappedResponse(requester, OperationFinished(id))
     }
   }
 
@@ -183,18 +237,20 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
   /**
     * insert handles the insertion of the node in the correct position or forwards the message
     * down the tree to an available slot.
+    * @param base the control actor
     * @param requester the originator of the message
     * @param id the id of the received instruction
     * @param position Left or Right
     * @param elem the search target value
     */
-  def insert(requester: ActorRef, id: Int, position: Position, elem: Int): Unit = {
+  def insert(base: ActorRef, requester: ActorRef, id: Int, position: Position, elem: Int): Unit
+  = {
     if (!subtrees.contains(position)) {
       writeNewSubtree(position, elem)
-      requester ! OperationFinished(id)
+      base ! WrappedResponse(requester, OperationFinished(id))
     }
     else{
-      subtrees(position) ! Insert(requester, id, elem)
+      subtrees(position).tell(Insert(requester, id, elem), base)
     }
   }
 
