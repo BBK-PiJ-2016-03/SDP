@@ -157,6 +157,7 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
           => insert(sender, requester, id, Left, elem)
     case Insert(requester, id, elem) if elem > this.elem
           => insert(sender, requester, id, Right, elem)
+    case Insert(requester, id, elem) if elem == this.elem => removed = false
     case Contains(requester, id, elem) => contains(sender, requester, id, elem)
     case Remove(requester, id, elem) => remove(sender, requester, id, elem)
     case _ => println(s"Unknown message")
@@ -173,7 +174,12 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
   def contains(base: ActorRef, requester: ActorRef, id: Int, elem: Int): Unit = {
     // this node is the target node
     if(elem == this.elem) {
-      base ! WrappedResponse(requester, ContainsResult(id, true))
+      if (removed){
+        base ! WrappedResponse(requester, ContainsResult(id, false))
+      } else {
+        base ! WrappedResponse(requester, ContainsResult(id, true))
+      }
+
     } else if (elem < this.elem && subNodeAvailable(Left)) {
       //target node is to the left
       getNode(Left).tell(Contains(requester, id, elem), base)
