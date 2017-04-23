@@ -110,6 +110,13 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
     case _ => ???
   }
 
+  /**
+    * contains handles the check on the current node and appropriate forwarding of message in the
+    * event that the message needs to be passed down into nodes in either the left or right subtree
+    * @param requester the originator of the message
+    * @param id the id of the received instruction
+    * @param elem the search target value
+    */
   def contains(requester: ActorRef, id: Int, elem: Int): Unit = {
     // this node is the target node
     if(elem == this.elem) {
@@ -128,6 +135,13 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
     }
   }
 
+  /**
+    * remove handles the flagging of the current node as removed if it matched the target, or the
+    * appropriate message forwarding to nodes in the left or right subtree.
+    * @param requester the originator of the message
+    * @param id the id of the received instruction
+    * @param elem the search target value
+    */
   def remove(requester: ActorRef, id: Int, elem: Int): Unit = {
     // this node is targeted for deletion
     if(elem == this.elem) {
@@ -147,14 +161,33 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
     }
   }
 
+  /**
+    * subNodeAvailable returns a boolean to indicate whether the node in the provided position
+    * exists.
+    * @param position Left or Right
+    * @return true if it exists, false otherwise
+    */
   def subNodeAvailable(position: Position): Boolean = {
     subtrees.contains(position)
   }
 
+  /**
+    * getNode
+    * @param position Left or Right
+    * @return the node in the supplied position
+    */
   def getNode(position: Position): ActorRef = {
     subtrees(position)
   }
 
+  /**
+    * insert handles the insertion of the node in the correct position or forwards the message
+    * down the tree to an available slot.
+    * @param requester the originator of the message
+    * @param id the id of the received instruction
+    * @param position Left or Right
+    * @param elem the search target value
+    */
   def insert(requester: ActorRef, id: Int, position: Position, elem: Int): Unit = {
     if (!subtrees.contains(position)) {
       writeNewSubtree(position, elem)
@@ -165,6 +198,12 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
     }
   }
 
+  /**
+    * writeNewSubtree handles the actual write to replace the subtrees value by retaining an
+    * existing node or not for the node not being currently written.
+    * @param position Left or Right
+    * @param elem the new node value
+    */
   def writeNewSubtree(position: Position, elem: Int): Unit ={
     val other = otherPosition(position)
     if (!subtrees.contains(other)){
@@ -179,6 +218,12 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
     }
   }
 
+  /**
+    * otherPosition gets the position not supplied. If Left is provides it returns Right and
+    * vice-versa
+    * @param position the current Left or Right
+    * @return Left or Right opposite to the position
+    */
   def otherPosition(position: Position): Position = position match {
     case Left => Right
     case Right => Left
