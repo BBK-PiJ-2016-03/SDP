@@ -1,6 +1,11 @@
 package actortree
 
 import akka.actor._
+import akka.pattern.ask
+import akka.util.Timeout
+import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.duration._
+import scala.language.postfixOps
 
 import scala.collection.immutable.{HashMap, Queue}
 
@@ -39,6 +44,8 @@ object BinaryTreeSet {
     */
   case class Remove(requester: ActorRef, id: Int, elem: Int) extends Operation
 
+  case class Ping(requester: ActorRef)
+
   /** Request to perform garbage collection*/
   case object GC
 
@@ -52,6 +59,9 @@ object BinaryTreeSet {
 
   /** Message to base holding OperationReply */
   case class WrappedResponse(requestor: ActorRef, reply: OperationReply) extends InternalResponse
+
+  /** Message to indicate existence for traversal */
+  case class Exists(node: ActorRef)
 
 }
 
@@ -67,6 +77,9 @@ class BinaryTreeSet extends Actor {
 
   var root = createRoot
 
+  var newRoot : Option[ActorRef] = None
+  var collecting = false
+
   // optional
   var pendingQueue = Queue.empty[Operation]
 
@@ -79,7 +92,9 @@ class BinaryTreeSet extends Actor {
   /** Accepts `Operation` and `GC` messages. */
   val normal: Receive = {
     case msg:Operation => enqueue(msg)
+    case GC if !collecting => garbageCollecting(createRoot)
     case msg:InternalResponse => forwardResponse(msg)
+    //case Exists(node: ActorRef) => root ! Insert()
   }
 
   /**
@@ -88,8 +103,6 @@ class BinaryTreeSet extends Actor {
     * @param response
     */
   def forwardResponse(response: InternalResponse): Unit = {
-    println(s"Received response from children")
-    println(s"Sending ${response.requestor} : ${response.reply}")
     response.requestor ! response.reply
 
     if(pendingQueue.size > 0) {
@@ -106,14 +119,12 @@ class BinaryTreeSet extends Actor {
     * @param operation the received operation to enqueue
     */
   def enqueue(operation: Operation): Unit = {
-    println(s"Received operation")
     if(!pendingResponse) {
       root ! operation
       pendingResponse = true
     } else{
       pendingQueue.enqueue(operation)
     }
-
   }
 
   // optional
@@ -121,7 +132,11 @@ class BinaryTreeSet extends Actor {
     * `newRoot` is the root of the new binary tree where we want to copy
     * all non-removed elements into.
     */
-  def garbageCollecting(newRoot: ActorRef): Receive = ???
+  def garbageCollecting(newRoot: ActorRef): Unit = {
+    collecting = true
+    this.newRoot = Some(newRoot)
+    root ! Ping(self)
+  }
 }
 
 object BinaryTreeNode {
@@ -160,7 +175,27 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
     case Insert(requester, id, elem) if elem == this.elem => removed = false
     case Contains(requester, id, elem) => contains(sender, requester, id, elem)
     case Remove(requester, id, elem) => remove(sender, requester, id, elem)
+    case Ping(source: ActorRef) => traversal(sender, source)
     case _ => println(s"Unknown message")
+  }
+
+  def traversal(sender: ActorRef, source: ActorRef): Unit = {
+    implicit val timeout = Timeout(5 seconds)
+    //traverse in-order
+
+    if (subNodeAvailable(Left)){
+      val future = getNode(Left) ? Ping(source)
+      val response = Await.result(future, timeout.duration)
+    }
+
+    if(!removed) {
+      source ! Exists(self)
+      sender ! Exists(self)
+    }
+
+    if (subNodeAvailable(Right)){
+      getNode(Right) ! Ping(source)
+    }
   }
 
   /**
