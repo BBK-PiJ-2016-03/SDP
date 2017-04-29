@@ -44,7 +44,7 @@ object BinaryTreeSet {
     */
   case class Remove(requester: ActorRef, id: Int, elem: Int) extends Operation
 
-  case class Ping(requester: ActorRef)
+  case class Ping(requester: ActorRef, root: ActorRef)
 
   /** Request to perform garbage collection*/
   case object GC
@@ -61,10 +61,14 @@ object BinaryTreeSet {
   case class WrappedResponse(requestor: ActorRef, reply: OperationReply) extends InternalResponse
 
   /** Message to indicate existence for traversal */
-  case class Exists(node: ActorRef)
+  case class Exists(value: Int)
+
+  /** Message to indicate traversal complete */
+  case class GcComplete()
 
 }
 
+//place the gc command into the queue as normal. Handle it in sequence and inside the dequeue cmd <----------------------------
 
 class BinaryTreeSet extends Actor {
   import BinaryTreeSet._
@@ -76,9 +80,9 @@ class BinaryTreeSet extends Actor {
   def createRoot: ActorRef = context.actorOf(BinaryTreeNode.props(0, initiallyRemoved = true))
 
   var root = createRoot
-
-  var newRoot : Option[ActorRef] = None
   var collecting = false
+  var oldRoot: Option[ActorRef] = None
+  //var gcSource: Option[ActorRef] = None
 
   // optional
   var pendingQueue = Queue.empty[Operation]
@@ -92,9 +96,16 @@ class BinaryTreeSet extends Actor {
   /** Accepts `Operation` and `GC` messages. */
   val normal: Receive = {
     case msg:Operation => enqueue(msg)
-    case GC if !collecting => garbageCollecting(createRoot)
+    case GC if !collecting => garbageCollecting(sender)
+    case GC => {}
+    case OperationFinished(-1) if !collecting => pendingResponse = false
     case msg:InternalResponse => forwardResponse(msg)
-    //case Exists(node: ActorRef) => root ! Insert()
+    case GcComplete() => gcCleanUp()
+    case Exists(value: Int) => {
+      pendingResponse = true
+      root ! Insert(self, -1, value)
+    }
+    case msg => println(s"Unknown message received: $msg")
   }
 
   /**
@@ -104,11 +115,19 @@ class BinaryTreeSet extends Actor {
     */
   def forwardResponse(response: InternalResponse): Unit = {
     response.requestor ! response.reply
+    dequeuePendingCommand()
+  }
 
+  /**
+    * check to see if any commands are pending execution, if so dequeue the next and execute it.
+    */
+  def dequeuePendingCommand(): Unit = {
     if(pendingQueue.size > 0) {
+      println(s"${pendingQueue.size} pending commands")
       val msg = pendingQueue.dequeue()
       root ! msg
     } else {
+      println(s"No pending commands")
       pendingResponse = false
     }
   }
@@ -119,9 +138,9 @@ class BinaryTreeSet extends Actor {
     * @param operation the received operation to enqueue
     */
   def enqueue(operation: Operation): Unit = {
-    if(!pendingResponse) {
-      root ! operation
+    if(!pendingResponse && !collecting) {
       pendingResponse = true
+      root ! operation
     } else{
       pendingQueue.enqueue(operation)
     }
@@ -132,10 +151,22 @@ class BinaryTreeSet extends Actor {
     * `newRoot` is the root of the new binary tree where we want to copy
     * all non-removed elements into.
     */
-  def garbageCollecting(newRoot: ActorRef): Unit = {
+  def garbageCollecting(sender: ActorRef): Unit = {
     collecting = true
-    this.newRoot = Some(newRoot)
-    root ! Ping(self)
+    println(s"Garbage Collection Started")
+    oldRoot = Some(root)
+    root = createRoot
+    //gcSource = Some(sender)
+    oldRoot.foreach(actor => actor ! Ping(self, actor))
+  }
+
+  def gcCleanUp(): Unit = {
+    println(s"Cleaning up GC")
+    oldRoot.foreach(context.stop)
+    oldRoot = None
+    collecting = false
+    println(s"Garbage Collection Complete")
+    dequeuePendingCommand()
   }
 }
 
@@ -175,26 +206,54 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
     case Insert(requester, id, elem) if elem == this.elem => removed = false
     case Contains(requester, id, elem) => contains(sender, requester, id, elem)
     case Remove(requester, id, elem) => remove(sender, requester, id, elem)
-    case Ping(source: ActorRef) => traversal(sender, source)
-    case _ => println(s"Unknown message")
+    case Ping(source: ActorRef, root: ActorRef) => traversal(sender, source, root)
+    case msg => println(s"Unknown message: $msg")
   }
 
-  def traversal(sender: ActorRef, source: ActorRef): Unit = {
+  /**
+    * Traverse all nodes in post order, returning an exists message to source if the node hasn't
+    * been removed and a complete flag if the node is the last node to be visited (root node).
+    * @param sender the immediate sender of the message (BinaryTreeNode)
+    * @param source the initiator of the message (BinaryTreeSet)
+    */
+  def traversal(sender: ActorRef, source: ActorRef, root: ActorRef): Unit = {
     implicit val timeout = Timeout(5 seconds)
-    //traverse in-order
 
+    //traverse post-order
     if (subNodeAvailable(Left)){
-      val future = getNode(Left) ? Ping(source)
-      val response = Await.result(future, timeout.duration)
+      println(s"Checking left")
+      println(s"Awaiting response Left")
+      val future = getNode(Left) ? Ping(source, root)
+      val response = Await.result(future, timeout.duration).asInstanceOf[ActorRef] //ensure visit order
+      println(s"Received response Left")
+    } else {
+      println(s"No Left Node")
     }
 
+    if (subNodeAvailable(Right)) {
+      println(s"Checking right")
+      println(s"Awaiting response Right")
+      val future = getNode(Right) ? Ping(source, root)
+      val response = Await.result(future, timeout.duration).asInstanceOf[ActorRef] //ensure visit order
+      println(s"Received response Right")
+    } else {
+      println(s"No Right Node")
+    }
+
+    println(s"Handling self")
     if(!removed) {
-      source ! Exists(self)
-      sender ! Exists(self)
+      source ! Exists(elem)
+      if (self != root) {
+        sender ! self
+        println(s"Response up chain")
+      }
     }
 
-    if (subNodeAvailable(Right)){
-      getNode(Right) ! Ping(source)
+    if(self == root) {
+      println(s"Complete")
+      source ! GcComplete()
+    } else {
+      println(s"Not root")
     }
   }
 
