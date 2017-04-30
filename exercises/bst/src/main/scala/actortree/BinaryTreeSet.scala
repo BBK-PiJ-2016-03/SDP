@@ -68,7 +68,6 @@ object BinaryTreeSet {
 
 }
 
-//place the gc command into the queue as normal. Handle it in sequence and inside the dequeue cmd <----------------------------
 
 class BinaryTreeSet extends Actor {
   import BinaryTreeSet._
@@ -82,7 +81,7 @@ class BinaryTreeSet extends Actor {
   var root = createRoot
   var collecting = false
   var oldRoot: Option[ActorRef] = None
-  //var gcSource: Option[ActorRef] = None
+  var gcSource: Option[ActorRef] = None
 
   // optional
   var pendingQueue = Queue.empty[Operation]
@@ -96,7 +95,10 @@ class BinaryTreeSet extends Actor {
   /** Accepts `Operation` and `GC` messages. */
   val normal: Receive = {
     case msg:Operation => enqueue(msg)
-    case GC if !collecting => garbageCollecting(sender)
+    case GC if !collecting => {
+      collecting = true
+      gcSource = Some(sender)
+    }
     case GC => {}
     case OperationFinished(-1) if !collecting => pendingResponse = false
     case msg:InternalResponse => forwardResponse(msg)
@@ -122,12 +124,13 @@ class BinaryTreeSet extends Actor {
     * check to see if any commands are pending execution, if so dequeue the next and execute it.
     */
   def dequeuePendingCommand(): Unit = {
-    if(pendingQueue.size > 0) {
-      println(s"${pendingQueue.size} pending commands")
+    if(pendingQueue.size > 0 && !collecting) {
       val msg = pendingQueue.dequeue()
       root ! msg
+    } else if (collecting && gcSource != None) {
+      gcSource.foreach(garbageCollecting)
+      gcSource = None
     } else {
-      println(s"No pending commands")
       pendingResponse = false
     }
   }
@@ -153,7 +156,6 @@ class BinaryTreeSet extends Actor {
     */
   def garbageCollecting(sender: ActorRef): Unit = {
     collecting = true
-    println(s"Garbage Collection Started")
     oldRoot = Some(root)
     root = createRoot
     //gcSource = Some(sender)
@@ -161,11 +163,9 @@ class BinaryTreeSet extends Actor {
   }
 
   def gcCleanUp(): Unit = {
-    println(s"Cleaning up GC")
     oldRoot.foreach(context.stop)
     oldRoot = None
     collecting = false
-    println(s"Garbage Collection Complete")
     dequeuePendingCommand()
   }
 }
@@ -203,7 +203,8 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
           => insert(sender, requester, id, Left, elem)
     case Insert(requester, id, elem) if elem > this.elem
           => insert(sender, requester, id, Right, elem)
-    case Insert(requester, id, elem) if elem == this.elem => removed = false
+    case Insert(requester, id, elem) if elem == this.elem
+          => insertionDuplicate(sender, requester, id, elem)
     case Contains(requester, id, elem) => contains(sender, requester, id, elem)
     case Remove(requester, id, elem) => remove(sender, requester, id, elem)
     case Ping(source: ActorRef, root: ActorRef) => traversal(sender, source, root)
@@ -221,39 +222,26 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
 
     //traverse post-order
     if (subNodeAvailable(Left)){
-      println(s"Checking left")
-      println(s"Awaiting response Left")
       val future = getNode(Left) ? Ping(source, root)
-      val response = Await.result(future, timeout.duration).asInstanceOf[ActorRef] //ensure visit order
-      println(s"Received response Left")
-    } else {
-      println(s"No Left Node")
+      //ensure visit order
+      val response = Await.result(future, timeout.duration).asInstanceOf[ActorRef]
     }
 
     if (subNodeAvailable(Right)) {
-      println(s"Checking right")
-      println(s"Awaiting response Right")
       val future = getNode(Right) ? Ping(source, root)
-      val response = Await.result(future, timeout.duration).asInstanceOf[ActorRef] //ensure visit order
-      println(s"Received response Right")
-    } else {
-      println(s"No Right Node")
+      //ensure visit order
+      val response = Await.result(future, timeout.duration).asInstanceOf[ActorRef]
     }
 
-    println(s"Handling self")
     if(!removed) {
       source ! Exists(elem)
       if (self != root) {
         sender ! self
-        println(s"Response up chain")
       }
     }
 
     if(self == root) {
-      println(s"Complete")
       source ! GcComplete()
-    } else {
-      println(s"Not root")
     }
   }
 
@@ -352,6 +340,18 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
     else{
       subtrees(position).tell(Insert(requester, id, elem), base)
     }
+  }
+
+  /**
+    * Handles the case where the inserted element is the current one. Ensure that it is not removed.
+    * @param base the control actor
+    * @param requester the originator of the message
+    * @param id the id of the received instruction
+    * @param elem the search target value
+    */
+  def insertionDuplicate(base: ActorRef, requester: ActorRef, id: Int, elem: Int) {
+    removed = false
+    base ! WrappedResponse(requester, OperationFinished(id))
   }
 
   /**
