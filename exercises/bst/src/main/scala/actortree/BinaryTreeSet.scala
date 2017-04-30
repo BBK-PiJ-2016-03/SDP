@@ -44,6 +44,7 @@ object BinaryTreeSet {
     */
   case class Remove(requester: ActorRef, id: Int, elem: Int) extends Operation
 
+  /** Request to obtain node's existence for tree copying */
   case class Ping(requester: ActorRef, root: ActorRef)
 
   /** Request to perform garbage collection*/
@@ -124,10 +125,10 @@ class BinaryTreeSet extends Actor {
     * check to see if any commands are pending execution, if so dequeue the next and execute it.
     */
   def dequeuePendingCommand(): Unit = {
-    if(pendingQueue.size > 0 && !collecting) {
+    if(pendingQueue.nonEmpty && !collecting) {
       val msg = pendingQueue.dequeue()
       root ! msg
-    } else if (collecting && gcSource != None) {
+    } else if (collecting && gcSource.isDefined) {
       gcSource.foreach(garbageCollecting)
       gcSource = None
     } else {
@@ -151,17 +152,22 @@ class BinaryTreeSet extends Actor {
 
   // optional
   /** Handles messages while garbage collection is performed.
-    * `newRoot` is the root of the new binary tree where we want to copy
-    * all non-removed elements into.
+    * `newRoot` is the root of the new binary tree where we want to copy all non-removed elements
+    * into. The previous tree is sent a ping command for node traversal and response messages are
+    * handled by inserting into the new tree. Performing an ordered traversal allows us to know when
+    * all nodes have been visited, unlike a broadcast.
     */
   def garbageCollecting(sender: ActorRef): Unit = {
     collecting = true
     oldRoot = Some(root)
     root = createRoot
-    //gcSource = Some(sender)
     oldRoot.foreach(actor => actor ! Ping(self, actor))
   }
 
+  /**
+    * Finalisation operations for cleaning up after completion of gc by removing the old actors
+    * and resetting variables to allow for message handling continuation
+    */
   def gcCleanUp(): Unit = {
     oldRoot.foreach(context.stop)
     oldRoot = None
