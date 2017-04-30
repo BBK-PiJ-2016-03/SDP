@@ -239,7 +239,7 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
         sender ! self
       }
     }
-
+    //When traversing post order, the root node will be the last node visited
     if(self == root) {
       source ! GcComplete()
     }
