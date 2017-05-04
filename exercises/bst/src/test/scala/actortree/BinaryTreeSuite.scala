@@ -87,6 +87,22 @@ class BinaryTreeSuite(_system: ActorSystem) extends TestKit(_system)
 
     verify(requester, ops, expectedReplies)
   }
+
+  test("insert on an existing element") {
+    val topNode = system.actorOf(Props[BinaryTreeSet])
+
+    topNode ! Insert(testActor, id = 1, 1)
+    topNode ! Insert(testActor, id = 2, 1)
+
+    topNode ! Contains(testActor, id = 1, 1)
+    expectMsg(ContainsResult(1, false))
+
+    topNode ! Insert(testActor, id = 2, 1)
+    topNode ! Contains(testActor, id = 3, 1)
+
+    expectMsg(OperationFinished(2))
+    expectMsg(ContainsResult(3, true))
+  }
   
   test("behave identically to built-in set (includes GC)") {
     val rnd = new Random()

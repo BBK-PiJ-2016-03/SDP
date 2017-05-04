@@ -1,7 +1,9 @@
 package state
 
 case class RoboticCook(r: Robot) extends RoboticState {
-  def walk(): Unit = ???
-  def cook(): Unit = ???
-  def off(): Unit = ???
+  def walk(): Unit = println("Walking...")
+  def cook(): Unit = println("Cooking...")
+  def off(): Unit = {
+    println("Robot cannot be switched off")
+  }
 }
