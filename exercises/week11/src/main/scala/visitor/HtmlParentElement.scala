@@ -6,7 +6,7 @@ case class HtmlParentElement(var tagName: String) extends HtmlTag {
 
   private var childrenTag: Seq[HtmlTag] = Vector()
 
-  override def addChildTag(htmlTag: HtmlTag): Unit = childrenTag :+ htmlTag
+  override def addChildTag(htmlTag: HtmlTag): Unit = childrenTag = childrenTag :+ htmlTag
   override def removeChildTag(htmlTag: HtmlTag): Unit = {
     childrenTag = childrenTag.filter(e => e != htmlTag)
   }

@@ -1,17 +1,16 @@
 package visitor
 
 object TestVisitorPattern extends App {
-  println("Befor visitor......... \n")
+  println("Before visitor......... \n")
 
   var parentTag: HtmlTag = HtmlParentElement("<html>")
-
   parentTag.setStartTag("<html>")
   parentTag.setEndTag("</html>")
 
   var p1: HtmlTag = HtmlParentElement("<body>")
-
   p1.setStartTag("<body>")
   p1.setEndTag("</body>")
+
   parentTag.addChildTag(p1)
 
   var child1: HtmlTag = HtmlElement("<p>")
