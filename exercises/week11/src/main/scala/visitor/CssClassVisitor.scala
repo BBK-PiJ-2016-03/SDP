@@ -7,8 +7,14 @@ case class CssClassVisitor() extends Visitor {
     element.setStartTag(sb.toString())
   }
   override def visit(parentElement: HtmlParentElement): Unit = {
-    var sb: StringBuilder = new StringBuilder(parentElement.getStartTag())
-    sb.insert(parentElement.getStartTag().length-1, " class='visitor'")
-    parentElement.setStartTag(sb.toString())
+    val strippedTag = stripBraces(parentElement.getStartTag())
+    var sb: StringBuilder = new StringBuilder(strippedTag)
+    sb.insert(strippedTag.length, " class='visitor'")
+    parentElement.setStartTag(s"<${sb.toString()}>")
+  }
+
+  def stripBraces(input: String): String = {
+    var output = input.replaceAll("<|>", "")
+    output
   }
 }
